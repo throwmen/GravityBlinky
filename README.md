@@ -6,10 +6,10 @@ los cuales calcularán un tiempo t, consistente en la cantidad de tiempo que se 
 Para el cálculo como tal, usamos las fórmulas de caída libre:
 
 $$
-h = v_0*t + \dfrac{g*t^2}{2}
+h = v_0 t + \frac{g t^2}{2}
 $$
 
-Suponiendo velocida inicial igual a cero, nos queda:
+Suponiendo velocidad inicial igual a cero, nos queda:
 
 $$
 g = 2*\dfrac{h}{t^2}
@@ -43,7 +43,7 @@ lcd.printf("Tremendas conexiones");
 
 #### **Inicialización de variables:**
 Se inicializan variables booleanas paso1 y paso2 con el fin de definir un orden para las operaciones siguientes.
-Además se inicializan el treshold, que ayuda a definir si los sensores de luz estan recibiendo luz o no, y el height, la cual indica la distancia que existe entre los sensores previamente definidos.
+Además, se inicializan el treshold, que ayuda a definir si los sensores de luz están recibiendo luz o no, y el height, la cual indica la distancia que existe entre los sensores previamente definidos.
 ```cpp
 bool paso1 = true;
 bool paso2 = false;
@@ -54,9 +54,9 @@ const float height = 0.1;
 #### **While infinito:**
 En este se realizarán los cálculos de la gravedad. Para ello:
 ##### **Primer if:**
-Verifica que a el primer sensor no le este llegando luz, lo que significa que un objeto esta pasando por ahí.
+Verifica que a el primer sensor no le esté llegando luz, lo que significa que un objeto está pasando por ahí.
 Lo que hace es iniciar el timer, y eventualmente hace el cambio de booleanos, lo que implica que lo único que puede pasar es que pasa por el siguiente sensor. 
-Con esto nos aseguramos de que si si el objeto es muy grande, el timer no se este reiniciando constantemente.
+Con esto nos aseguramos de que, si el objeto es muy grande, el timer no se esté reiniciando constantemente.
 ```cpp
 if (lightSensor1.read() < treshold && paso1) {
     timer.reset();
@@ -68,7 +68,7 @@ if (lightSensor1.read() < treshold && paso1) {
 ##### **Segundo if:**
 Verifica que el objeto este tapando la luz del segundo sensor, siempre y cuando haya pasado inicialmente por el primer sensor.
 Aquí se para el timer, y se calcula el tiempo en milisegundos, para posteriormente pasarlo a segundos dividiendo entre 1000. 
-Con ello tenemos todo listo para el cálculo de la gravedad, el cual se explico anteriormente.
+Con ello tenemos todo listo para el cálculo de la gravedad, el cual se explicó anteriormente.
 Luego se muestra tanto en consola como en el LCD, teniendo en cuenta para este último, limpiar la pantalla y buscar la posición adecuada para imprimir el mensaje.
 Finalmente se cambian los booleanos nuevamente para repetir el experimento sin ningún problema.
 ```cpp
