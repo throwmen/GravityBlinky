@@ -1,5 +1,9 @@
 # **Proyecto cálculo de la gravedad**
 
+## **Integrantes:**
+1.  Pedro Juan Henao
+2.  Juan David Oliveros
+
 ## **Descripción método y modelo**
 La gravedad se puede calcular de distintas maneras, pero para este caso en concreto, utilizamos dos sensores separados una distancia h,
 los cuales calcularán un tiempo t, consistente en la cantidad de tiempo que se demora un objeto en pasar del primer sensor al segundo sensor.
