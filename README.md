@@ -1,72 +1,88 @@
-![](./resources/official_armmbed_example_badge.png)
-# Blinky Mbed OS example
+# **Proyecto cálculo de la gravedad**
 
-The example project is part of the [Arm Mbed OS Official Examples](https://os.mbed.com/code/) and is the [getting started example for Mbed OS](https://os.mbed.com/docs/mbed-os/latest/quick-start/index.html). It contains an application that repeatedly blinks an LED on supported [Mbed boards](https://os.mbed.com/platforms/).
+## **Descripción método y modelo**
+La gravedad se puede calcular de distintas maneras, pero para este caso en concreto, utilizamos dos sensores separados una distancia h,
+los cuales calcularán un tiempo t, consistente en la cantidad de tiempo que se demora un objeto en pasar del primer sensor al segundo sensor.
+Para el cálculo como tal, usamos las fórmulas de caída libre:
 
-You can build the project with all supported [Mbed OS build tools](https://os.mbed.com/docs/mbed-os/latest/tools/index.html). However, this example project specifically refers to the command-line interface tool [Arm Mbed CLI](https://github.com/ARMmbed/mbed-cli#installing-mbed-cli).
-(Note: To see a rendered example you can import into the Arm Online Compiler, please see our [import quick start](https://os.mbed.com/docs/mbed-os/latest/quick-start/online-with-the-online-compiler.html#importing-the-code).)
+$$
+h = v_0*t + \dfrac{g*t^2}{2}
+$$
 
-## Mbed OS build tools
+Suponiendo velocida inicial igual a cero, nos queda:
 
-### Mbed CLI 2
-Starting with version 6.5, Mbed OS uses Mbed CLI 2. It uses Ninja as a build system, and CMake to generate the build environment and manage the build process in a compiler-independent manner. If you are working with Mbed OS version prior to 6.5 then check the section [Mbed CLI 1](#mbed-cli-1).
-1. [Install Mbed CLI 2](https://os.mbed.com/docs/mbed-os/latest/build-tools/install-or-upgrade.html).
-1. From the command-line, import the example: `mbed-tools import mbed-os-example-blinky`
-1. Change the current directory to where the project was imported.
+$$
+g = 2*\dfrac{h}{t^2}
+$$
 
-### Mbed CLI 1
-1. [Install Mbed CLI 1](https://os.mbed.com/docs/mbed-os/latest/quick-start/offline-with-mbed-cli.html).
-1. From the command-line, import the example: `mbed import mbed-os-example-blinky`
-1. Change the current directory to where the project was imported.
+## **Descripción del Código**
 
-## Application functionality
+### **Imports:**
+```cpp
+#include "mbed.h": Incluye la biblioteca principal de mbed, que proporciona funciones para trabajar con microcontroladores mbed.
+#include <iostream>: Incluye la biblioteca de entrada/salida estándar de C++ para imprimir mensajes en la consola.
+#include "TextLCD.h": Incluye la biblioteca para manejar la pantalla LCD de texto.
+```
 
-The `main()` function is the single thread in the application. It toggles the state of a digital output connected to an LED on the board.
+### **Inicialización de Objetos:**
+```cpp
+UnbufferedSerial serial(USBTX, USBRX, 9600);: Inicializa un objeto de comunicación serial sin búfer a través de los pines USBTX y USBRX con una velocidad de baudios de 9600.
+TextLCD lcd (D2, D3, D4, D5, D6, D7, TextLCD::LCD16x2);: Inicializa un objeto de pantalla LCD de texto en los pines D2 a D7 con un formato de 16x2 caracteres.
+AnalogIn lightSensor1(A0); y AnalogIn lightSensor2(A1);: Inicializa dos objetos de entrada analógica en los pines A0 y A1 para leer datos de sensores de luz.
+Timer timer;: Inicializa un objeto temporizador.
+```
+### **Función Principal (main()):**
 
-**Note**: This example requires a target with RTOS support, i.e. one with `rtos` declared in `supported_application_profiles` in `targets/targets.json` in [mbed-os](https://github.com/ARMmbed/mbed-os). For non-RTOS targets (usually with small memory sizes), please use [mbed-os-example-blinky-baremetal](https://github.com/ARMmbed/mbed-os-example-blinky-baremetal) instead.
+#### **Verificaciones:**
+Se imprime un mensaje en la consola y en la pantalla LCD para indicar el inicio del cálculo de la gravedad.
+```cpp
+std::cout << "Inicia el cálculo de la gravedad: " << std::endl;
+lcd.locate(0, 0);
+lcd.printf("Tremendas conexiones");
+```
 
-## Building and running
+#### **Inicialización de variables:**
+Se inicializan variables booleanas paso1 y paso2 con el fin de definir un orden para las operaciones siguientes.
+Además se inicializan el treshold, que ayuda a definir si los sensores de luz estan recibiendo luz o no, y el height, la cual indica la distancia que existe entre los sensores previamente definidos.
+```cpp
+bool paso1 = true;
+bool paso2 = false;
+float treshold = 0.2;
+const float height = 0.1;
+```
 
-1. Connect a USB cable between the USB port on the board and the host computer.
-1. Run the following command to build the example project and program the microcontroller flash memory:
-
-    * Mbed CLI 2
-
-    ```bash
-    $ mbed-tools compile -m <TARGET> -t <TOOLCHAIN> --flash
-    ```
-
-    * Mbed CLI 1
-
-    ```bash
-    $ mbed compile -m <TARGET> -t <TOOLCHAIN> --flash
-    ```
-
-Your PC may take a few minutes to compile your code.
-
-The binary is located at:
-* **Mbed CLI 2** - `./cmake_build/mbed-os-example-blinky.bin`</br>
-* **Mbed CLI 1** - `./BUILD/<TARGET>/<TOOLCHAIN>/mbed-os-example-blinky.bin`
-
-Alternatively, you can manually copy the binary to the board, which you mount on the host computer over USB.
-
-## Expected output
-The LED on your target turns on and off every 500 milliseconds.
-
-
-## Troubleshooting
-If you have problems, you can review the [documentation](https://os.mbed.com/docs/latest/tutorials/debugging.html) for suggestions on what could be wrong and how to fix it.
-
-## Related Links
-
-* [Mbed OS Stats API](https://os.mbed.com/docs/latest/apis/mbed-statistics.html).
-* [Mbed OS Configuration](https://os.mbed.com/docs/latest/reference/configuration.html).
-* [Mbed OS Serial Communication](https://os.mbed.com/docs/latest/tutorials/serial-communication.html).
-* [Mbed OS bare metal](https://os.mbed.com/docs/mbed-os/latest/reference/mbed-os-bare-metal.html).
-* [Mbed boards](https://os.mbed.com/platforms/).
-
-### License and contributions
-
-The software is provided under Apache-2.0 license. Contributions to this project are accepted under the same license. Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more info.
-
-This project contains code from other projects. The original license text is included in those source files. They must comply with our license guide.
+#### **While infinito:**
+En este se realizarán los cálculos de la gravedad. Para ello:
+##### **Primer if:**
+Verifica que a el primer sensor no le este llegando luz, lo que significa que un objeto esta pasando por ahí.
+Lo que hace es iniciar el timer, y eventualmente hace el cambio de booleanos, lo que implica que lo único que puede pasar es que pasa por el siguiente sensor. 
+Con esto nos aseguramos de que si si el objeto es muy grande, el timer no se este reiniciando constantemente.
+```cpp
+if (lightSensor1.read() < treshold && paso1) {
+    timer.reset();
+    timer.start();
+    paso1 = false;
+    paso2 = true;
+}
+```
+##### **Segundo if:**
+Verifica que el objeto este tapando la luz del segundo sensor, siempre y cuando haya pasado inicialmente por el primer sensor.
+Aquí se para el timer, y se calcula el tiempo en milisegundos, para posteriormente pasarlo a segundos dividiendo entre 1000. 
+Con ello tenemos todo listo para el cálculo de la gravedad, el cual se explico anteriormente.
+Luego se muestra tanto en consola como en el LCD, teniendo en cuenta para este último, limpiar la pantalla y buscar la posición adecuada para imprimir el mensaje.
+Finalmente se cambian los booleanos nuevamente para repetir el experimento sin ningún problema.
+```cpp
+else if (lightSensor2.read() < treshold && paso2){
+    timer.stop(); 
+    float timeInSeconds = duration_cast<milliseconds>(timer.elapsed_time()).count();
+    timeInSeconds /= 1000;
+    float gravity = 2*height/pow(timeInSeconds,2);
+    std::cout << "La gravedad es de: " << gravity << " m/s^2" << std::endl;
+    lcd.cls();
+    lcd.locate(0, 0);
+    lcd.printf("La gravedad es: ");
+    lcd.locate(0, 1);
+    lcd.printf("%f m/s^2", gravity);
+    paso1 = true; 
+    paso2 = false;       
+}

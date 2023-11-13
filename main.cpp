@@ -7,9 +7,6 @@
 #include <iostream>
 #include "TextLCD.h"
 using namespace std::chrono;
-// Blinking rate in milliseconds
-#define BLINKING_RATE     100ms
-
 
 UnbufferedSerial serial(USBTX, USBRX, 9600);
 TextLCD lcd (D2, D3, D4, D5, D6, D7, TextLCD::LCD16x2);
@@ -20,6 +17,8 @@ Timer timer;
 int main()
 {
     std::cout << "Inicia el cálculo de la gravedad: " << std::endl;
+    lcd.locate(0, 0);
+    lcd.printf("Tremendas conexiones");
     bool paso1 = true;
     bool paso2 = false;
     float treshold = 0.2;
@@ -40,9 +39,9 @@ int main()
             std::cout << "La gravedad es de: " << gravity << " m/s^2" << std::endl;
             lcd.cls();
             lcd.locate(0, 0);
-            lcd.printf("La aceleración es: ");
+            lcd.printf("La gravedad es: ");
             lcd.locate(0, 1);
-            lcd.printf("%f .m/s", gravity);
+            lcd.printf("%f m/s^2", gravity);
             paso1 = true; 
             paso2 = false;       
         }
